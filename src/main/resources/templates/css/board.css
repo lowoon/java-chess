@@ -95,18 +95,39 @@ body {
     margin: 0 auto;
 }
 
-.user-name {
+.game {
+    display: flex;
+}
+
+.user-status {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+    margin: 5px auto;
+}
+
+.user-status .user-name {
+    margin: 0;
     font-size: 50px;
     font-family: fantasy;
     text-align: center;
     flex: 1;
 }
 
-.turn {
+.user-status .turn {
+    margin: 0;
     font-size: 50px;
     font-family: fantasy;
     color: hotpink;
     flex: 1;
+}
+
+.user-status .score {
+    text-align: center;
+    font-family: fantasy;
+    font-size: 30px;
 }
 
 input[type="submit"] {

@@ -58,6 +58,14 @@ public class ChessResult {
                 .reduce(0, Integer::sum);
     }
 
+    public Score getWhiteScore() {
+        return result.get(PlayerColor.WHITE);
+    }
+
+    public Score getBlackScore() {
+        return result.get(PlayerColor.BLACK);
+    }
+
     public Map<PlayerColor, Score> getResult() {
         return Collections.unmodifiableMap(result);
     }

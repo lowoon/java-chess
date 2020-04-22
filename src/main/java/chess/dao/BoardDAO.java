@@ -31,7 +31,6 @@ public class BoardDAO {
         int boardId = rs.getInt(1);
 
         cellDAO.addCells(board, boardId);
-
     }
 
     public Optional<Board> findBoardByUser(User blackUser, User whiteUser) throws SQLException {

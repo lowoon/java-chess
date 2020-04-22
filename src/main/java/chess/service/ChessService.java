@@ -45,9 +45,6 @@ public class ChessService {
     public Board move(User blackUser, String source, String target) throws SQLException {
         Board board = boards.get(blackUser).move(source, target);
         boards.put(blackUser, board);
-        if (!board.isNotFinished()) {
-            delete(board.getBlackUser(), board.getWhiteUser());
-        }
         return board;
     }
 
@@ -79,15 +76,28 @@ public class ChessService {
     }
 
     public int getTurn(User blackUser) {
-        return boards.get(blackUser).getTurn();
+        return boards.get(blackUser)
+                .getTurn();
+    }
+
+    public double calculateWhiteScore(User blackUser) {
+        return calculateResult(blackUser).getWhiteScore()
+                .getScore();
+    }
+
+    public double calculateBlackScore(User blackUser) {
+        return calculateResult(blackUser).getBlackScore()
+                .getScore();
     }
 
     public ChessResult calculateResult(User blackUser) {
-        return boards.get(blackUser).calculateResult();
+        return boards.get(blackUser)
+                .calculateResult();
     }
 
     public boolean checkGameNotFinished(User blackUser) {
-        return boards.get(blackUser).isNotFinished();
+        return boards.get(blackUser)
+                .isNotFinished();
     }
 
     public Board getBoard(User blackUser) {

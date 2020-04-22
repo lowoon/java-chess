@@ -7,6 +7,7 @@ import java.util.Map;
 
 import chess.domain.player.User;
 import chess.service.ChessService;
+import chess.util.JsonTransformer;
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.handlebars.HandlebarsTemplateEngine;
@@ -54,16 +55,21 @@ public class WebUIChessApplication {
             String target = req.queryParams("target");
             String blackUserName = req.queryParams("blackUserName");
             User blackUser = new User(blackUserName);
+            Map<String, Object> model = new HashMap<>();
+            model.put("status", false);
+            model.put("message", "");
             try {
                 chessService.move(blackUser, source, target);
+                model.put("white", chessService.calculateWhiteScore(blackUser));
+                model.put("black", chessService.calculateBlackScore(blackUser));
             } catch (RuntimeException e) {
-                return e.getMessage();
+                model.put("message", e.getMessage());
             }
             if (chessService.checkGameNotFinished(blackUser)) {
-                return true;
+                model.put("status", true);
             }
-            return "finished";
-        });
+            return model;
+        }, new JsonTransformer());
 
         post("/save", (req, res) -> {
             String blackUserName = req.queryParams("blackUserName");
@@ -72,12 +78,6 @@ public class WebUIChessApplication {
             Map<String, Object> model = new HashMap<>();
             model.put("rows", chessService.getEmptyRowsDto());
             return render(model, "main.html");
-        });
-
-        post("/status", (req, res) -> {
-            Map<String, Object> model = new HashMap<>();
-            String blackUserName = req.queryParams("blackUserName");
-            return render(model, "status.html");
         });
 
         post("/end", (req, res) -> {

@@ -9,7 +9,7 @@ public class Status {
     private final int turn;
     private final StatusType statusType;
 
-    public Status(int turn, StatusType statusType) {
+    private Status(int turn, StatusType statusType) {
         this.turn = turn;
         this.statusType = statusType;
     }
