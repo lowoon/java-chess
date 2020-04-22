@@ -37,10 +37,10 @@ class RookTest {
     @MethodSource("createSourceToTarget")
     void findMovePath(Position source, Position target, List<Position> expected) {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatCode(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -68,10 +68,10 @@ class RookTest {
     void invalidMovementException(Position target) {
         Position source = Position.from("d5");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -96,7 +96,7 @@ class RookTest {
     @DisplayName("장애물이 있을 경우")
     void obstacle() {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         Position source = Position.from("d5");
         Position target = Position.from("g5");
 
@@ -105,7 +105,7 @@ class RookTest {
         boardMap.put(source, gamePiece);
         boardMap.put(obstacle, new Pawn(PlayerColor.BLACK));
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);

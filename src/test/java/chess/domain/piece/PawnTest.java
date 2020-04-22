@@ -37,13 +37,13 @@ class PawnTest {
     void findMovePath(Position target, List<Position> expected) {
         Position source = Position.from("d2");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
 
         boardMap.put(source, gamePiece);
         boardMap.put(Position.from("c3"), new King(PlayerColor.BLACK));
         boardMap.put(Position.from("e3"), new King(PlayerColor.BLACK));
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatCode(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -65,12 +65,12 @@ class PawnTest {
     @MethodSource("createInvalidTarget")
     void invalidMovementException(Position target) {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         Position source = Position.from("d5");
 
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -95,10 +95,10 @@ class PawnTest {
     @MethodSource("createPawnAndTarget")
     void blackMove(GamePiece piece, Position source, Position target) {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         boardMap.put(source, piece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatCode(() -> piece.validateMoveTo(board, source, target))
                 .doesNotThrowAnyException();
@@ -118,12 +118,12 @@ class PawnTest {
     @DisplayName("original 위치가 아닌 곳에서 2칸 이동할 경우 예외 처리")
     void moveThrowException() {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         GamePiece piece = new Pawn(PlayerColor.BLACK);
         Position source = Position.from("d5");
         boardMap.put(source, piece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatThrownBy(() -> piece.validateMoveTo(board, source, Position.from("d3")))
                 .isInstanceOf(InvalidMovementException.class)

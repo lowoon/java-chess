@@ -36,10 +36,10 @@ class KingTest {
     void findMovePath(Position target, List<Position> expected) {
         Position source = Position.from("d5");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatCode(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -65,10 +65,10 @@ class KingTest {
     void invalidMovementException(Position target) {
         Position source = Position.from("d5");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 0);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);

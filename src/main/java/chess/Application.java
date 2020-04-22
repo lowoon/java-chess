@@ -67,7 +67,7 @@ public class Application {
             List<LineDto> rows = RowsDtoConverter.convertFrom(
                     service.move(blackUser, command.getSource(), command.getTarget()).getBoard());
             OutputView.printBoard(rows);
-        } catch (RuntimeException | SQLException e) {
+        } catch (RuntimeException e) {
             OutputView.printExceptionMessage(e.getMessage());
         }
     }

@@ -21,8 +21,8 @@ class StatusTest {
 
     static Stream<Arguments> createWhiteStatus() {
         return Stream.of(
-                Arguments.of(new Status(0, StatusType.PROCESSING), true),
-                Arguments.of(new Status(1, StatusType.PROCESSING), false)
+                Arguments.of(Status.from(0), true),
+                Arguments.of(Status.from(1), false)
         );
     }
 
@@ -35,8 +35,8 @@ class StatusTest {
 
     static Stream<Arguments> createBlackStatus() {
         return Stream.of(
-                Arguments.of(new Status(0, StatusType.PROCESSING), false),
-                Arguments.of(new Status(1, StatusType.PROCESSING), true)
+                Arguments.of(Status.from(0), false),
+                Arguments.of(Status.from(1), true)
         );
     }
 
@@ -49,9 +49,9 @@ class StatusTest {
 
     static Stream<Arguments> createNotProcessingStatus() {
         return Stream.of(
-                Arguments.of(new Status(0, StatusType.READY), true),
-                Arguments.of(new Status(0, StatusType.PROCESSING), false),
-                Arguments.of(new Status(0, StatusType.FINISHED), true)
+                Arguments.of(Status.readyStatus(), true),
+                Arguments.of(Status.initialStatus(), false),
+                Arguments.of(Status.initialStatus().finish(), true)
         );
     }
 
@@ -64,15 +64,15 @@ class StatusTest {
 
     static Stream<Arguments> createNotFinishedStatus() {
         return Stream.of(
-                Arguments.of(new Status(0, StatusType.READY), true),
-                Arguments.of(new Status(0, StatusType.PROCESSING), true),
-                Arguments.of(new Status(0, StatusType.FINISHED), false)
+                Arguments.of(Status.readyStatus(), true),
+                Arguments.of(Status.initialStatus(), true),
+                Arguments.of(Status.initialStatus().finish(), false)
         );
     }
 
     @Test
     void nextTurn() {
-        Status status = new Status(0, StatusType.PROCESSING);
+        Status status = Status.initialStatus();
         int initTurn = status.getTurn();
         status = status.nextTurn();
 
@@ -81,7 +81,7 @@ class StatusTest {
 
     @Test
     void finish() {
-        Status status = new Status(0, StatusType.PROCESSING);
+        Status status = Status.initialStatus();
         status = status.finish();
 
         assertThat(status.getStatusType()).isEqualTo(StatusType.FINISHED);

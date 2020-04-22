@@ -10,25 +10,20 @@ import chess.domain.exception.InvalidMovementException;
 import chess.domain.piece.EmptyPiece;
 import chess.domain.piece.GamePiece;
 import chess.domain.player.PlayerColor;
-import chess.domain.player.User;
 import chess.domain.result.ChessResult;
 
 public class Board {
 
     private final Map<Position, GamePiece> board;
     private final Status status;
-    private final User first;
-    private final User second;
 
-    private Board(Map<Position, GamePiece> board, Status status, User blackUser, User whiteUser) {
+    private Board(Map<Position, GamePiece> board, Status status) {
         this.board = Collections.unmodifiableMap(new TreeMap<>(board));
         this.status = status;
-        this.first = blackUser;
-        this.second = whiteUser;
     }
 
-    static Board of(Map<Position, GamePiece> board, Status status, User blackUser, User whiteUser) {
-        return new Board(board, status, blackUser, whiteUser);
+    static Board of(Map<Position, GamePiece> board, Status status) {
+        return new Board(board, status);
     }
 
     public String searchPath(String sourceInput) {
@@ -53,9 +48,9 @@ public class Board {
         Status nextStatus = status.nextTurn();
 
         if (targetPiece.isKing()) {
-            return new Board(board, nextStatus.finish(), first, second);
+            return new Board(board, nextStatus.finish());
         }
-        return new Board(board, nextStatus, first, second);
+        return new Board(board, nextStatus);
     }
 
     private void validateAll(String sourceInput, String targetInput) {
@@ -115,14 +110,6 @@ public class Board {
 
     public int getTurn() {
         return status.getTurn();
-    }
-
-    public User getBlackUser() {
-        return first;
-    }
-
-    public User getWhiteUser() {
-        return second;
     }
 
     @Override

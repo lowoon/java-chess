@@ -29,7 +29,7 @@ class BoardTest {
     @Test
     @DisplayName("Processing 상태 전에 move를 실행")
     void moveBeforeProcessing() {
-        Board board = BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.createEmptyBoard();
         assertThatThrownBy(() -> {
             board.move("d4", "d5");
         }).isInstanceOf(UnsupportedOperationException.class)
@@ -41,10 +41,9 @@ class BoardTest {
     @MethodSource("createMovement")
     void move(GamePiece piece, String source, String target, int turn) {
         Map<Position, GamePiece> map = new HashMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from(source), piece);
-        Board board = Board.of(map, new Status(turn, StatusType.PROCESSING), User.EMPTY_BOARD_USER,
-                User.EMPTY_BOARD_USER);
+        Board board = Board.of(map, Status.from(turn));
         board = board.move(source, target);
 
         assertThat(board.getBoard().get(Position.from(source))).isEqualTo(EmptyPiece.getInstance());
@@ -64,9 +63,9 @@ class BoardTest {
     @DisplayName("Black Pawn이 위로 올라갈 경우")
     void moveWithImpossiblePawnMovement() {
         Map<Position, GamePiece> map = new HashMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from("d5"), new Pawn(BLACK));
-        Board board = Board.of(map, new Status(1, StatusType.PROCESSING), User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = Board.of(map, Status.from(1));
 
         assertThatThrownBy(() -> {
             board.move("d5", "d6");
@@ -78,7 +77,7 @@ class BoardTest {
     @DisplayName("source 기물이 없는 경우")
     void moveWithEmptySource() {
         assertThatThrownBy(() -> {
-            BoardFactory.createInitialBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).move("d3", "d5");
+            BoardFactory.createInitialBoard().move("d3", "d5");
         }).isInstanceOf(InvalidMovementException.class)
                 .hasMessage("이동할 수 없습니다.\n기물이 존재하지 않습니다.");
     }
@@ -88,10 +87,9 @@ class BoardTest {
     @MethodSource("createBoardAndTurn")
     void moveWhenInvalidTurn(int turn, GamePiece gamePiece) {
         Map<Position, GamePiece> map = new HashMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from("d5"), gamePiece);
-        Board board = Board.of(map, new Status(turn, StatusType.PROCESSING), User.EMPTY_BOARD_USER,
-                User.EMPTY_BOARD_USER);
+        Board board = Board.of(map, Status.from(turn));
 
         assertThatThrownBy(() -> {
             board.move("d5", "g8");
@@ -112,12 +110,12 @@ class BoardTest {
         Position source = Position.from("d5");
         Position target = Position.from("d4");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         GamePiece gamePiece = new Rook(BLACK);
         boardMap.put(source, gamePiece);
         boardMap.put(target, new Bishop(BLACK));
 
-        Board board = BoardFactory.of(boardMap, 1, User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.of(boardMap, 1);
 
         assertThatThrownBy(() -> board.move("d5", "d4"))
                 .isInstanceOf(InvalidMovementException.class)
@@ -129,10 +127,10 @@ class BoardTest {
     @MethodSource("createPathWithObstacle")
     void moveWithObstacle(GamePiece gamePiece, String source, String target) {
         Map<Position, GamePiece> map = new HashMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from(source), gamePiece);
         map.put(Position.from("e3"), new Bishop(BLACK));
-        Board board = Board.of(map, new Status(0, StatusType.PROCESSING), User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = Board.of(map, Status.from(0));
         assertThatThrownBy(() -> {
             board.move(source, target);
         }).isInstanceOf(InvalidMovementException.class)
@@ -153,10 +151,10 @@ class BoardTest {
     @MethodSource("createFinish")
     void isBoardFinished(String source, String target, boolean expected) {
         Map<Position, GamePiece> map = new HashMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from("c5"), new King(WHITE));
         map.put(Position.from("d6"), new Pawn(BLACK));
-        Board board = Board.of(map, new Status(1, StatusType.PROCESSING), User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = Board.of(map, Status.from(1));
         board = board.move(source, target);
 
         assertThat(board.isNotFinished()).isEqualTo(expected);

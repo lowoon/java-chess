@@ -15,7 +15,7 @@ public class BoardFactoryTest {
     @Test
     @DisplayName("보드 생성")
     void create() {
-        Board board = BoardFactory.createInitialBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.createInitialBoard();
         String map = board.getBoard()
                 .values()
                 .stream()

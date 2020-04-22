@@ -18,14 +18,13 @@ import chess.domain.piece.Knight;
 import chess.domain.piece.Pawn;
 import chess.domain.piece.Rook;
 import chess.domain.player.PlayerColor;
-import chess.domain.player.User;
 
 class ChessResultTest {
 
     @Test
     @DisplayName("초기 board score 계산")
     void calculateScore() {
-        Board board = BoardFactory.createInitialBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER);
+        Board board = BoardFactory.createInitialBoard();
         ChessResult chessResult = ChessResult.from(board.getBoard());
         Map<PlayerColor, Score> scores = chessResult.getResult();
         Map<PlayerColor, Score> expected = new HashMap<>();
@@ -39,7 +38,7 @@ class ChessResultTest {
     @DisplayName("같은 player, 같은 column의 pawn이 여러개 있는 경우 score 계산")
     void calculateScoreWhiteSameColumnPawn() {
         Map<Position, GamePiece> map = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from("d5"), new Pawn(PlayerColor.WHITE));
         map.put(Position.from("d6"), new Pawn(PlayerColor.WHITE));
         map.put(Position.from("f3"), new Pawn(PlayerColor.WHITE));
@@ -55,7 +54,7 @@ class ChessResultTest {
     @DisplayName("여러 말 점수 계산")
     void calculateScoreWithSomePieces() {
         Map<Position, GamePiece> map = new TreeMap<>(
-                BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER).getBoard());
+                BoardFactory.createEmptyBoard().getBoard());
         map.put(Position.from("d5"), new Pawn(PlayerColor.WHITE));
         map.put(Position.from("d6"), new Pawn(PlayerColor.WHITE));
         map.put(Position.from("f3"), new Pawn(PlayerColor.WHITE));

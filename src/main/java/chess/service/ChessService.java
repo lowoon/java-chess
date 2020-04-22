@@ -23,7 +23,7 @@ public class ChessService {
 
     public ChessService() {
         boards = new HashMap<>();
-        boards.put(User.EMPTY_BOARD_USER, BoardFactory.createEmptyBoard(User.EMPTY_BOARD_USER, User.EMPTY_BOARD_USER));
+        boards.put(User.EMPTY_BOARD_USER, BoardFactory.createEmptyBoard());
     }
 
     public Board findByUserName(User blackUser, User whiteUser) throws SQLException {
@@ -34,15 +34,15 @@ public class ChessService {
             UserDAO userDAO = new UserDAO(dbConnector);
             userDAO.addUser(blackUser);
             userDAO.addUser(whiteUser);
-            boardDAO.addBoard(BoardFactory.createInitialBoard(blackUser, whiteUser), blackUser, whiteUser);
+            boardDAO.addBoard(BoardFactory.createInitialBoard(), blackUser, whiteUser);
         }
         board = boardDAO.findBoardByUser(blackUser, whiteUser)
-                .orElse(BoardFactory.createInitialBoard(blackUser, whiteUser));
+                .orElse(BoardFactory.createInitialBoard());
         boards.put(blackUser, board);
         return board;
     }
 
-    public Board move(User blackUser, String source, String target) throws SQLException {
+    public Board move(User blackUser, String source, String target) {
         Board board = boards.get(blackUser).move(source, target);
         boards.put(blackUser, board);
         return board;
