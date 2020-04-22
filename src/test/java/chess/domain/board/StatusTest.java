@@ -49,7 +49,6 @@ class StatusTest {
 
     static Stream<Arguments> createNotProcessingStatus() {
         return Stream.of(
-                Arguments.of(Status.readyStatus(), true),
                 Arguments.of(Status.initialStatus(), false),
                 Arguments.of(Status.initialStatus().finish(), true)
         );
@@ -64,7 +63,6 @@ class StatusTest {
 
     static Stream<Arguments> createNotFinishedStatus() {
         return Stream.of(
-                Arguments.of(Status.readyStatus(), true),
                 Arguments.of(Status.initialStatus(), true),
                 Arguments.of(Status.initialStatus().finish(), false)
         );

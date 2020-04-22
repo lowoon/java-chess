@@ -9,6 +9,7 @@ import chess.dao.BoardDAO;
 import chess.dao.UserDAO;
 import chess.domain.board.Board;
 import chess.domain.board.BoardFactory;
+import chess.domain.gameinfo.GameInfo;
 import chess.domain.player.User;
 import chess.domain.result.ChessResult;
 import chess.dto.LineDto;
@@ -18,15 +19,14 @@ import chess.util.DBConnector;
 public class ChessService {
 
     private BoardDAO boardDAO;
-    private Map<User, Board> boards;
+    private Map<User, GameInfo> games;
     private DBConnector dbConnector;
 
     public ChessService() {
-        boards = new HashMap<>();
-        boards.put(User.EMPTY_BOARD_USER, BoardFactory.createEmptyBoard());
+        games = new HashMap<>();
     }
 
-    public Board findByUserName(User blackUser, User whiteUser) throws SQLException {
+    public GameInfo findByUserName(User blackUser, User whiteUser) throws SQLException {
         dbConnector = new DBConnector();
         boardDAO = new BoardDAO(dbConnector);
         Board board;
@@ -34,23 +34,28 @@ public class ChessService {
             UserDAO userDAO = new UserDAO(dbConnector);
             userDAO.addUser(blackUser);
             userDAO.addUser(whiteUser);
-            boardDAO.addBoard(BoardFactory.createInitialBoard(), blackUser, whiteUser);
+            boardDAO.addBoard(BoardFactory.createInitialBoard(), blackUser, whiteUser, 0);
         }
         board = boardDAO.findBoardByUser(blackUser, whiteUser)
                 .orElse(BoardFactory.createInitialBoard());
-        boards.put(blackUser, board);
-        return board;
+        int turn = boardDAO.findTurnByUser(blackUser, whiteUser)
+                .orElse(0);
+        GameInfo gameInfo = GameInfo.from(board, turn);
+        games.put(blackUser, gameInfo);
+        return gameInfo;
     }
 
-    public Board move(User blackUser, String source, String target) {
-        Board board = boards.get(blackUser).move(source, target);
-        boards.put(blackUser, board);
-        return board;
+    public GameInfo move(User blackUser, String source, String target) {
+        GameInfo gameInfo = games.get(blackUser)
+                .move(source, target);
+        games.put(blackUser, gameInfo);
+        return gameInfo;
     }
 
     public void save(User blackUser, User whiteUser) throws SQLException {
-        boardDAO.saveBoardByUserName(boards.get(blackUser), blackUser, whiteUser);
-        boards.remove(blackUser);
+        GameInfo gameInfo = games.get(blackUser);
+        boardDAO.saveBoardByUserName(gameInfo.getBoard(), blackUser, whiteUser, gameInfo.getTurn());
+        games.remove(blackUser);
     }
 
     public void delete(User blackUser, User whiteUser) throws SQLException {
@@ -58,49 +63,47 @@ public class ChessService {
         UserDAO userDAO = new UserDAO(dbConnector);
         userDAO.deleteUserByUserName(blackUser.getName());
         userDAO.deleteUserByUserName(whiteUser.getName());
-        boards.remove(blackUser);
+        games.remove(blackUser);
         dbConnector.closeConnection();
     }
 
     public String searchPath(User blackUser, String sourceInput) {
-        return boards.get(blackUser).searchPath(sourceInput);
+        return games.get(blackUser).searchPath(sourceInput);
     }
 
     public List<LineDto> getEmptyRowsDto() {
-        return RowsDtoConverter.convertFrom(boards.get(User.EMPTY_BOARD_USER).getBoard());
+        return RowsDtoConverter.convertFrom(BoardFactory.EMPTY_BOARD);
     }
 
     public List<LineDto> getRowsDto(User blackUser, User whiteUser) throws SQLException {
-        Board board = findByUserName(blackUser, whiteUser);
-        return RowsDtoConverter.convertFrom(board.getBoard());
+        GameInfo gameInfo = findByUserName(blackUser, whiteUser);
+        return RowsDtoConverter.convertFrom(gameInfo.getBoard());
     }
 
     public int getTurn(User blackUser) {
-        return boards.get(blackUser)
+        return games.get(blackUser)
                 .getTurn();
     }
 
     public double calculateWhiteScore(User blackUser) {
-        return calculateResult(blackUser).getWhiteScore()
-                .getScore();
+        return games.get(blackUser).getWhiteScore();
     }
 
     public double calculateBlackScore(User blackUser) {
-        return calculateResult(blackUser).getBlackScore()
-                .getScore();
+        return games.get(blackUser).getBlackScore();
     }
 
     public ChessResult calculateResult(User blackUser) {
-        return boards.get(blackUser)
-                .calculateResult();
+        return games.get(blackUser)
+                .getChessResult();
     }
 
     public boolean checkGameNotFinished(User blackUser) {
-        return boards.get(blackUser)
+        return games.get(blackUser)
                 .isNotFinished();
     }
 
     public Board getBoard(User blackUser) {
-        return boards.get(blackUser);
+        return games.get(blackUser).getBoard();
     }
 }

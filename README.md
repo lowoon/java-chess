@@ -50,7 +50,7 @@
 
 ### 테이블 생성
 ```sql
-create table board
+create table gameinfo
 (
     id    int(50) auto_increment,
     black varchar(64) null,
@@ -58,7 +58,7 @@ create table board
     turn  int(12)     null
 ); 
 
-create table cell
+create table board
 (
     id       int(50) auto_increment,
     board_id int(50)     not null,

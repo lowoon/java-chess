@@ -21,7 +21,6 @@ import chess.domain.board.BoardFactory;
 import chess.domain.board.Position;
 import chess.domain.exception.InvalidMovementException;
 import chess.domain.player.PlayerColor;
-import chess.domain.player.User;
 
 class RookTest {
 
@@ -37,10 +36,10 @@ class RookTest {
     @MethodSource("createSourceToTarget")
     void findMovePath(Position source, Position target, List<Position> expected) {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard().getBoard());
+                BoardFactory.EMPTY_BOARD.getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0);
+        Board board = BoardFactory.of(boardMap);
 
         assertThatCode(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -68,10 +67,10 @@ class RookTest {
     void invalidMovementException(Position target) {
         Position source = Position.from("d5");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard().getBoard());
+                BoardFactory.EMPTY_BOARD.getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0);
+        Board board = BoardFactory.of(boardMap);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -96,7 +95,7 @@ class RookTest {
     @DisplayName("장애물이 있을 경우")
     void obstacle() {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard().getBoard());
+                BoardFactory.EMPTY_BOARD.getBoard());
         Position source = Position.from("d5");
         Position target = Position.from("g5");
 
@@ -105,7 +104,7 @@ class RookTest {
         boardMap.put(source, gamePiece);
         boardMap.put(obstacle, new Pawn(PlayerColor.BLACK));
 
-        Board board = BoardFactory.of(boardMap, 0);
+        Board board = BoardFactory.of(boardMap);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);

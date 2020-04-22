@@ -8,14 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import chess.domain.board.Board;
 import chess.domain.board.Position;
 import chess.domain.board.Row;
 import chess.domain.piece.GamePiece;
 
 public class RowsDtoConverter {
 
-    public static List<LineDto> convertFrom(Map<Position, GamePiece> gamePieces) {
-        Map<Row, LineDto> rows = gamePieces.entrySet()
+    public static List<LineDto> convertFrom(Board board) {
+        Map<Row, LineDto> rows = board.getBoard()
+                .entrySet()
                 .stream()
                 .collect(groupingBy(entry -> entry.getKey().getRow(),    // key(row)
                         () -> new TreeMap<>(Collections.reverseOrder()),    // 리턴타입은 reversed TreeMap

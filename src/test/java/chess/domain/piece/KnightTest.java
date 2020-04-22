@@ -36,10 +36,10 @@ class KnightTest {
     void findMovePath(Position target, List<Position> expected) {
         Position source = Position.from("d5");
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard().getBoard());
+                BoardFactory.EMPTY_BOARD.getBoard());
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0);
+        Board board = BoardFactory.of(boardMap);
 
         assertThatCode(() -> {
             gamePiece.validateMoveTo(board, source, target);
@@ -65,12 +65,12 @@ class KnightTest {
     @MethodSource("createInvalidTarget")
     void invalidMovementException(Position target) {
         Map<Position, GamePiece> boardMap = new TreeMap<>(
-                BoardFactory.createEmptyBoard().getBoard());
+                BoardFactory.EMPTY_BOARD.getBoard());
         Position source = Position.from("d5");
 
         boardMap.put(source, gamePiece);
 
-        Board board = BoardFactory.of(boardMap, 0);
+        Board board = BoardFactory.of(boardMap);
 
         assertThatThrownBy(() -> {
             gamePiece.validateMoveTo(board, source, target);

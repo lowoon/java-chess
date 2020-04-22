@@ -19,18 +19,18 @@ public class BoardDAO {
         this.cellDAO = new CellDAO(dbConnector);
     }
 
-    public void addBoard(Board board, User blackUser, User whiteUser) throws SQLException {
-        dbConnector.executeUpdate("INSERT INTO board (black, white, turn) VALUES (?, ?, ?)", blackUser.getName(),
-                whiteUser.getName(), String.valueOf(board.getTurn()));
+    public void addBoard(Board board, User blackUser, User whiteUser, int turn) throws SQLException {
+        dbConnector.executeUpdate("INSERT INTO gameinfo (black, white, turn) VALUES (?, ?, ?)", blackUser.getName(),
+                whiteUser.getName(), String.valueOf(turn));
 
         ResultSet rs = findBoardResultSet(blackUser, whiteUser);
 
         if (!rs.next())
             return;
 
-        int boardId = rs.getInt(1);
+        int gameInfoId = rs.getInt(1);
 
-        cellDAO.addCells(board, boardId);
+        cellDAO.addCells(board, gameInfoId);
     }
 
     public Optional<Board> findBoardByUser(User blackUser, User whiteUser) throws SQLException {
@@ -39,24 +39,32 @@ public class BoardDAO {
         if (!rs.next())
             return Optional.empty();
 
-        int boardId = rs.getInt(1);
+        int gameInfoId = rs.getInt(1);
 
-        return Optional.ofNullable(
-                BoardFactory.of(cellDAO.findCellsByBoardId(boardId), rs.getInt(4)));
+        return Optional.ofNullable(BoardFactory.of(cellDAO.findCellsByBoardId(gameInfoId)));
     }
 
-    public void saveBoardByUserName(Board board, User blackUser, User whiteUser) throws SQLException {
-        dbConnector.executeUpdate("UPDATE board SET turn = ? WHERE black = ? AND white = ?",
-                String.valueOf(board.getTurn()), blackUser.getName(), whiteUser.getName());
+    public Optional<Integer> findTurnByUser(User blackUser, User whiteUser) throws SQLException {
+        ResultSet rs = findBoardResultSet(blackUser, whiteUser);
+
+        if (!rs.next())
+            return Optional.empty();
+
+        return Optional.ofNullable(rs.getInt(4));
+    }
+
+    public void saveBoardByUserName(Board board, User blackUser, User whiteUser, int turn) throws SQLException {
+        dbConnector.executeUpdate("UPDATE gameinfo SET turn = ? WHERE black = ? AND white = ?",
+                String.valueOf(turn), blackUser.getName(), whiteUser.getName());
 
         ResultSet rs = findBoardResultSet(blackUser, whiteUser);
 
         if (!rs.next())
             return;
 
-        int boardId = rs.getInt(1);
+        int gameInfoId = rs.getInt(1);
 
-        cellDAO.updateCellsByBoardId(board, boardId);
+        cellDAO.updateCellsByBoardId(board, gameInfoId);
     }
 
     public boolean deleteBoardByUser(User blackUser, User whiteUser) throws SQLException {
@@ -65,18 +73,18 @@ public class BoardDAO {
         if (!rs.next())
             return false;
 
-        int boardId = rs.getInt(1);
+        int gameInfoId = rs.getInt(1);
 
-        cellDAO.deleteCellsByUser(boardId);
+        cellDAO.deleteCellsByUser(gameInfoId);
 
-        dbConnector.executeUpdate("DELETE FROM board WHERE black = ? AND white = ?", blackUser.getName(),
+        dbConnector.executeUpdate("DELETE FROM gameinfo WHERE black = ? AND white = ?", blackUser.getName(),
                 whiteUser.getName());
 
         return !findBoardByUser(blackUser, whiteUser).isPresent();
     }
 
     private ResultSet findBoardResultSet(User blackUser, User whiteUser) throws SQLException {
-        return dbConnector.executeQuery("SELECT * FROM board WHERE black = ? AND white = ?", blackUser.getName(),
+        return dbConnector.executeQuery("SELECT * FROM gameinfo WHERE black = ? AND white = ?", blackUser.getName(),
                 whiteUser.getName());
     }
 }

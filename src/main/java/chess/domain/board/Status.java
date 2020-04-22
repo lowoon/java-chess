@@ -14,10 +14,6 @@ public class Status {
         this.statusType = statusType;
     }
 
-    public static Status readyStatus() {
-        return new Status(INIT_TURN, StatusType.READY);
-    }
-
     public static Status initialStatus() {
         return new Status(INIT_TURN, StatusType.PROCESSING);
     }

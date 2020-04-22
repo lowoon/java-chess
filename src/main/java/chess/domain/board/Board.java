@@ -15,15 +15,13 @@ import chess.domain.result.ChessResult;
 public class Board {
 
     private final Map<Position, GamePiece> board;
-    private final Status status;
 
-    private Board(Map<Position, GamePiece> board, Status status) {
+    private Board(Map<Position, GamePiece> board) {
         this.board = Collections.unmodifiableMap(new TreeMap<>(board));
-        this.status = status;
     }
 
-    static Board of(Map<Position, GamePiece> board, Status status) {
-        return new Board(board, status);
+    static Board of(Map<Position, GamePiece> board) {
+        return new Board(board);
     }
 
     public String searchPath(String sourceInput) {
@@ -41,44 +39,26 @@ public class Board {
         Position source = Position.from(sourceInput);
         Position target = Position.from(targetInput);
         GamePiece sourcePiece = board.get(source);
-        GamePiece targetPiece = board.get(target);
 
         board.put(target, sourcePiece);
         board.put(source, EmptyPiece.getInstance());
-        Status nextStatus = status.nextTurn();
 
-        if (targetPiece.isKing()) {
-            return new Board(board, nextStatus.finish());
-        }
-        return new Board(board, nextStatus);
+        return new Board(board);
     }
 
     private void validateAll(String sourceInput, String targetInput) {
         Position source = Position.from(sourceInput);
         Position target = Position.from(targetInput);
 
-        validateStatus();
         GamePiece sourcePiece = board.get(source);
         validateSourcePiece(sourcePiece);
         validateColor(source, target);
         sourcePiece.validateMoveTo(this, source, target);
     }
 
-    private void validateStatus() {
-        if (status.isNotProcessing()) {
-            throw new UnsupportedOperationException("먼저 게임을 실행해야합니다.");
-        }
-    }
-
     private void validateSourcePiece(GamePiece sourcePiece) {
         if (sourcePiece.equals(EmptyPiece.getInstance())) {
             throw new InvalidMovementException("기물이 존재하지 않습니다.");
-        }
-        if (status.isWhiteTurn() && sourcePiece.is(PlayerColor.BLACK)) {
-            throw new InvalidMovementException("해당 플레이어의 턴이 아닙니다.");
-        }
-        if (status.isBlackTurn() && sourcePiece.is(PlayerColor.WHITE)) {
-            throw new InvalidMovementException("해당 플레이어의 턴이 아닙니다.");
         }
     }
 
@@ -96,20 +76,27 @@ public class Board {
         return !EmptyPiece.getInstance().equals(board.get(position));
     }
 
-    public boolean isNotFinished() {
-        return status.isNotFinished();
-    }
-
     public ChessResult calculateResult() {
         return ChessResult.from(board);
     }
 
-    public Map<Position, GamePiece> getBoard() {
-        return Collections.unmodifiableMap(board);
+    public boolean isKing(String position) {
+        GamePiece gamePiece = board.get(Position.from(position));
+        return gamePiece.isKing();
     }
 
-    public int getTurn() {
-        return status.getTurn();
+    public boolean isBlack(String position) {
+        GamePiece gamePiece = board.get(Position.from(position));
+        return gamePiece.is(PlayerColor.BLACK);
+    }
+
+    public boolean isWhite(String position) {
+        GamePiece gamePiece = board.get(Position.from(position));
+        return gamePiece.is(PlayerColor.WHITE);
+    }
+
+    public Map<Position, GamePiece> getBoard() {
+        return Collections.unmodifiableMap(board);
     }
 
     @Override
@@ -119,12 +106,11 @@ public class Board {
         if (!(o instanceof Board))
             return false;
         Board board1 = (Board)o;
-        return Objects.equals(board, board1.board) &&
-                Objects.equals(status, board1.status);
+        return Objects.equals(board, board1.board);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, status);
+        return Objects.hash(board);
     }
 }

@@ -11,9 +11,7 @@ import chess.domain.piece.GamePieces;
 
 public class BoardFactory {
 
-    public static Board createEmptyBoard() {
-        return Board.of(createEmptyMap(), Status.readyStatus());
-    }
+    public static Board EMPTY_BOARD = Board.of(createEmptyMap());
 
     private static Map<Position, GamePiece> createEmptyMap() {
         return Position.list()
@@ -27,7 +25,7 @@ public class BoardFactory {
             placePiecesOnInitialPositions(initialBoard, piece);
         }
 
-        return Board.of(initialBoard, Status.initialStatus());
+        return Board.of(initialBoard);
     }
 
     private static void placePiecesOnInitialPositions(Map<Position, GamePiece> board, GamePiece piece) {
@@ -36,13 +34,13 @@ public class BoardFactory {
         }
     }
 
-    public static Board of(Map<Position, GamePiece> boardInput, int turn) {
+    public static Board of(Map<Position, GamePiece> boardInput) {
         Map<Position, GamePiece> board = new HashMap<>();
 
         for (Map.Entry<Position, GamePiece> entry : boardInput.entrySet()) {
             board.put(entry.getKey(), entry.getValue());
         }
 
-        return Board.of(board, Status.from(turn));
+        return Board.of(board);
     }
 }
